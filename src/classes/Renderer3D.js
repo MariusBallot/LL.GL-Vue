@@ -1,45 +1,19 @@
-//@ts-ignore
+import RAF from "../utils/RAF"
+
 import vertSourceShader from '../shaders/3D/shader.vert'
-//@ts-ignore
 import fragSourceShader from '../shaders/3D/shader.frag'
 
-import m4 from '../utils/m4'
+import * as glMatrix from 'gl-matrix'
 import cubeGeom from '../utils/cube'
 import cubeNorm from '../utils/cube'
-//@ts-ignore
 import createProgram from '../utils/createProgram'
 
 export default class Renderer3D {
 
-    texFlag: boolean
-
-    gl: WebGLRenderingContext
-    vertexShader: WebGLShader
-    fragmentShader: WebGLShader
-    program: WebGLProgram
-
-    positionLocation: number
-    normalLocation: number
-
-    resolutionUniformLocation: WebGLUniformLocation
-    colorLocation: WebGLUniformLocation
-    matrixLocation: WebGLUniformLocation
-
-    texture: WebGLTexture
-
-    positionBuffer: WebGLBuffer
-
-    image: HTMLImageElement
-    maths: any
-
-    m4: any
-    cubeGeom: any
-
-    cubeSize: number
-
-    constructor(public canvas: HTMLCanvasElement) {
+    constructor(canvas) {
+        this.canvas = canvas
         this.texFlag = false
-        this.m4 = m4
+        this.m4 = glMatrix.mat4
         this.cubeGeom = cubeGeom
         this.cubeSize = 20
 
@@ -73,9 +47,8 @@ export default class Renderer3D {
         this.gl.enable(this.gl.CULL_FACE)
         this.gl.enable(this.gl.DEPTH_TEST)
 
-        this.draw()
-
         window.addEventListener('resize', this.resizeCanvas)
+        RAF.subscribe('glDraw', this.draw)
     }
 
     draw() {
@@ -94,27 +67,29 @@ export default class Renderer3D {
         var numFs = 5;
         var radius = 600;
 
-        var projectionMatrix = this.m4.perspective(Math.PI / 3, this.gl.canvas.width / this.gl.canvas.height, 1, 10000)
+        var projectionMatrix = this.m4.perspective({ fov: Math.PI / 3, aspec: this.gl.canvas.width / this.gl.canvas.height, near: 1, far: 10000 })
 
         var fPosition = [0, 0, 0];
         var up = [0, 1, 0];
 
-        var cameraMatrix = this.m4.yRotation(Date.now() * 0.001);
-        cameraMatrix = this.m4.translate(cameraMatrix, 0, 0, 1200);
+        var camMatrix = this.m4.create()
+        this.m4.rotateY(camMatrix, camMatrix, Date.now() * 0.001);
+        this.m4.translate(camMatrix, camMatrix, 0, 0, 1200);
         var cameraPosition = [
-            cameraMatrix[12],
-            cameraMatrix[13],
-            cameraMatrix[14],
+            camMatrix[12],
+            camMatrix[13],
+            camMatrix[14],
         ];
 
         // Compute a matrix for the camera
         // var cameraMatrix = this.m4.yRotation(Date.now() * 0.001);
         // cameraMatrix = this.maths.translate(cameraMatrix, 0, 0, 1200);
 
-        var cameraMatrix = this.m4.lookAt(cameraPosition, fPosition, up);
+        this.m4.lookAt(camMatrix, camMatrix, fPosition, up);
 
-        var viewMatrix = this.m4.inverse(cameraMatrix);
-        var viewProjectionMatrix = this.m4.multiply(projectionMatrix, viewMatrix);
+        // var viewMatrix = this.m4.inverse(camMatrix);
+        var viewProjectionMatrix = this.m4.create()
+        this.m4.multiply(viewProjectionMatrix, projectionMatrix, camMatrix);
 
         let cubeCount = 30;
         for (let x_ = 0; x_ < cubeCount; x_++) {
@@ -122,8 +97,9 @@ export default class Renderer3D {
                 let x = x_ * this.cubeSize - cubeCount * this.cubeSize / 2
                 let y = y_ * this.cubeSize - cubeCount * this.cubeSize / 2
 
-                var matrix = this.m4.translate(viewProjectionMatrix, x, 0, y);
-                matrix = this.m4.scale(matrix, 1, Math.sin(Date.now() * 0.001 + (x_ + y_) * 0.1) * 30, 1)
+                var matrix = this.m4.create()
+                this.m4.translate(matrix, viewProjectionMatrix, x, 0, y);
+                this.m4.scale(matrix, matrix, 1, Math.sin(Date.now() * 0.001 + (x_ + y_) * 0.1) * 30, 1)
 
                 this.gl.uniformMatrix4fv(this.matrixLocation, false, matrix)
 
@@ -137,6 +113,8 @@ export default class Renderer3D {
     }
 
     bind() {
+        this.init = this.init.bind(this)
+        this.draw = this.draw.bind(this)
         this.resizeCanvas = this.resizeCanvas.bind(this)
     }
 

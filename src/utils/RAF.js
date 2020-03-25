@@ -2,6 +2,7 @@ class RAF {
     constructor() {
         this.bind()
         this.callbacks = []
+        this.render()
 
     }
 
@@ -20,17 +21,19 @@ class RAF {
     }
 
     render() {
+        requestAnimationFrame(this.render)
         this.callbacks.forEach(item => {
-            item.callback
+            item.callback()
         });
-        console.log('hey')
     }
 
     bind() {
         this.subscribe = this.subscribe.bind(this)
         this.unsubscribe = this.unsubscribe.bind(this)
-        this.render = this.unsubscribe.bind(this)
+        this.render = this.render.bind(this)
 
-        requestAnimationFrame(this.render)
     }
 }
+
+const _instance = new RAF()
+export default _instance

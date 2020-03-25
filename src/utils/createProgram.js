@@ -1,6 +1,6 @@
-export default function createProgram(gl: WebGLRenderingContext, vertSource: string, fragSource: string) {
+export default function createProgram(gl, vertSource, fragSource) {
 
-  function createShader(gl: WebGLRenderingContext, type: number, source: string) {
+  function createShader(gl, type, source) {
     const shader = gl.createShader(type);
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
