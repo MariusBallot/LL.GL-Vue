@@ -8,7 +8,7 @@ export default class Camera {
         //Setup the perspective matrix
         this.projectionMatrix = new Float32Array(16);
         var ratio = gl.canvas.width / gl.canvas.height;
-        glMatrix.mat4.perspective(this.projectionMatrix, fov || 45, ratio, near || 0.1, far || 100.0);
+        Matrix4.perspective(this.projectionMatrix, fov || 45, ratio, near || 0.1, far || 100.0);
 
         this.transform = new Transform();		//Setup transform to control the position of the camera
         this.viewMatrix = new Float32Array(16);	//Cache the matrix that will hold the inverse of the transform.
@@ -54,10 +54,10 @@ export default class Camera {
                 .rotateY(this.transform.rotation.y * Transform.deg2Rad);
 
         } else {
-            // this.transform.matView.reset()
-            //     .rotateX(this.transform.rotation.x * Transform.deg2Rad)
-            //     .rotateY(this.transform.rotation.y * Transform.deg2Rad)
-            //     .vtranslate(this.transform.position);
+            this.transform.matView.reset()
+                .rotateX(this.transform.rotation.x * Transform.deg2Rad)
+                .rotateY(this.transform.rotation.y * Transform.deg2Rad)
+                .vtranslate(this.transform.position);
 
         }
 
