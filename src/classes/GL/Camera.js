@@ -50,13 +50,14 @@ export default class Camera {
         if (this.mode == Camera.MODE_FREE) {
             this.transform.matView.reset()
                 .vtranslate(this.transform.position)
-                .rotateX(this.transform.rotation.x * Transform.deg2Rad)
-                .rotateY(this.transform.rotation.y * Transform.deg2Rad);
+                .rotateX(this.transform.rotation[0] * Transform.deg2Rad)
+                .rotateY(this.transform.rotation[1] * Transform.deg2Rad);
+
 
         } else {
             this.transform.matView.reset()
-                .rotateX(this.transform.rotation.x * Transform.deg2Rad)
-                .rotateY(this.transform.rotation.y * Transform.deg2Rad)
+                .rotateX(this.transform.rotation[0] * Transform.deg2Rad)
+                .rotateY(this.transform.rotation[1] * Transform.deg2Rad)
                 .vtranslate(this.transform.position);
 
         }
@@ -130,8 +131,8 @@ export class CameraController {
 
         //When shift is being helt down, we pan around else we rotate.
         if (!e.shiftKey) {
-            this.camera.transform.rotation.y += dx * (this.rotateRate / this.canvas.width);
-            this.camera.transform.rotation.x += dy * (this.rotateRate / this.canvas.height);
+            this.camera.transform.rotation[0] += dx * (this.rotateRate / this.canvas.width);
+            this.camera.transform.rotation[1] += dy * (this.rotateRate / this.canvas.height);
         } else {
             this.camera.panX(-dx * (this.panRate / this.canvas.width));
             this.camera.panY(dy * (this.panRate / this.canvas.height));

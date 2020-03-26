@@ -31,14 +31,14 @@ export class Matrix4 {
 
     //....................................................................
     //Transformations Methods
-    vtranslate(v) { Matrix4.translate(this.raw, v.x, v.y, v.z); return this; }
+    vtranslate(v) { Matrix4.translate(this.raw, v[0], v[1], v[2]); return this; }
     translate(x, y, z) { Matrix4.translate(this.raw, x, y, z); return this; }
 
     rotateY(rad) { Matrix4.rotateY(this.raw, rad); return this; }
     rotateX(rad) { Matrix4.rotateX(this.raw, rad); return this; }
     rotateZ(rad) { Matrix4.rotateZ(this.raw, rad); return this; }
 
-    vscale(vec3) { Matrix4.scale(this.raw, vec3.x, vec3.y, vec3.z); return this; }
+    vscale(vec3) { Matrix4.scale(this.raw, vec3[0], vec3[1], vec3[2]); return this; }
     scale(x, y, z) { Matrix4.scale(this.raw, x, y, z); return this; }
 
     invert() { Matrix4.invert(this.raw); return this; }
