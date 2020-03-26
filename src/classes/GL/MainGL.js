@@ -38,7 +38,7 @@ class MainGL {
         //Main Setup
 
         this.gCamera = new Camera(this.gl);
-        glMatrix.vec3.set(this.gCamera.transform.position, 0, 0, 10);
+        glMatrix.vec3.set(this.gCamera.transform.position, 0, 0, 20);
 
 
         //Setup Grid

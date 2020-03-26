@@ -10,13 +10,12 @@ uniform mat4 uCameraMatrix;
 uniform vec3 uColor[6];
 out vec2 v_N;
 
-
 out highp vec2 texCoord;
 
 
 void main(void){
 	texCoord = a_uv;
-	
+
 	vec4 p = a_position;
 
 	vec3 e = normalize( vec3( uMVMatrix * p ) );
