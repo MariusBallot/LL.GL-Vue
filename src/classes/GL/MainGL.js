@@ -6,6 +6,8 @@ import Modal from "./Modal";
 import GLInstance from "./gl";
 import CameraController from "./Camera";
 import { GridAxisShader, TestShader } from "./Shader";
+import SimpleShader from './Shaders/Simple/SimpleShader'
+import MatCapShader from './Shaders/MatCap/MatCapShader'
 import Primatives from "./Primatives";
 
 
@@ -36,18 +38,17 @@ class MainGL {
         //Main Setup
 
         this.gCamera = new Camera(this.gl);
-
         glMatrix.vec3.set(this.gCamera.transform.position, 0, 0, 10);
 
 
         //Setup Grid
-        this.gGridShader = new GridAxisShader(this.gl, this.gCamera.projectionMatrix);
-        this.gGridModal = Primatives.GridAxis.createModal(this.gl, false);
+        // this.gGridShader = new GridAxisShader(this.gl, this.gCamera.projectionMatrix);
+        // this.gGridModal = Primatives.GridAxis.createModal(this.gl, false);
 
 
         //....................................
         //Setup Test Shader, Modal, Meshes
-        this.gShader = new TestShader(this.gl, this.gCamera.projectionMatrix);
+        this.gShader = new MatCapShader(this.gl, this.gCamera.projectionMatrix);
         //.setTexture(this.gl.mTextureCache["tex001"]);
 
         this.gModal = Primatives.Cube.createModal(this.gl);
@@ -60,24 +61,25 @@ class MainGL {
     }
 
     render() {
-        let x = Math.sin(Date.now() * 0.001) * 10
-        let z = Math.cos(Date.now() * 0.001) * 10
-
-        // glMatrix.vec3.set(this.gCamera.transform.position, x, 0, z)
-
         this.gModal.addRotation(1, 1, 0);
 
         this.gCamera.updateViewMatrix();
         this.gl.fClear();
-        this.gGridShader
-            .activate()
+        // this.gGridShader
+        //     .activate()
+        //     .setCameraMatrix(this.gCamera.viewMatrix)
+        //     .renderModal(this.gGridModal.preRender());
+
+        this.gShader
+            .activate() //.preRender()				//add preRender to the chain
             .setCameraMatrix(this.gCamera.viewMatrix)
-            .renderModal(this.gGridModal.preRender());
+            .setTime(performance.now())
+            .renderModal(this.gModal.preRender());
 
         if (this.icos != undefined) {
             this.icos.addRotation(1, 1, 1)
             this.gShader
-                .activate() //.preRender()				//add preRender to the chain
+                .preRender()				//add preRender to the chain
                 .setCameraMatrix(this.gCamera.viewMatrix)
                 .setTime(performance.now())
                 .renderModal(this.icos.preRender());

@@ -1,19 +1,19 @@
 import * as glMatrix from "gl-matrix"
 import Transform from './Transform'
-import { Vector3, Matrix4 } from "./Math"
 
 
 export default class Camera {
     constructor(gl, fov, near, far) {
-        //Setup the perspective matrix
-        this.projectionMatrix = new Float32Array(16);
+
+        this.projectionMatrix = glMatrix.mat4.create();
         var ratio = gl.canvas.width / gl.canvas.height;
-        Matrix4.perspective(this.projectionMatrix, fov || 45, ratio, near || 0.1, far || 100.0);
+
+        glMatrix.mat4.perspective(this.projectionMatrix, fov || 45, ratio, near || 0.1, far || 100.0);
 
         this.transform = new Transform();		//Setup transform to control the position of the camera
-        this.viewMatrix = new Float32Array(16);	//Cache the matrix that will hold the inverse of the transform.
+        this.viewMatrix = glMatrix.mat4.create();	//Cache the matrix that will hold the inverse of the transform.
 
-        this.mode = Camera.MODE_ORBIT;			//Set what sort of control mode to use.
+        // this.mode = Camera.MODE_ORBIT;			//Set what sort of control mode to use.
     }
 
     panX(v) {
@@ -65,7 +65,7 @@ export default class Camera {
         this.transform.updateDirection();
 
         //Cameras work by doing the inverse transformation on all meshes, the camera itself is a lie :)
-        Matrix4.invert(this.viewMatrix, this.transform.matView.raw);
+        glMatrix.mat4.invert(this.viewMatrix, this.transform.matView.raw);
         return this.viewMatrix;
     }
 }

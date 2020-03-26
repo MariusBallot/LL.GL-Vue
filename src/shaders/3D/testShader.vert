@@ -8,16 +8,16 @@ uniform mat4 uMVMatrix;
 uniform mat4 uCameraMatrix;
 
 uniform vec3 uColor[6];
-uniform float uTime;
+// uniform float uTime;
 
 out lowp vec4 color;
 out highp vec2 texCoord;  //Interpolate UV values to the fragment shader
 		
-vec3 warp(vec3 p){
-	//return p + 0.2 * abs(cos(uTime*0.002)) * a_norm;
-	//return p + 0.5 * abs(cos(uTime*0.003 + p.y)) * a_norm;
-	return p + 0.5 * abs(cos(uTime*0.003 + p.y*2.0 + p.x*2.0 + p.z)) * a_norm;
-}
+// vec3 warp(vec3 p){
+// 	//return p + 0.2 * abs(cos(uTime*0.002)) * a_norm;
+// 	//return p + 0.5 * abs(cos(uTime*0.003 + p.y)) * a_norm;
+// 	// return p + 0.5 * abs(cos(uTime*0.003 + p.y*2.0 + p.x*2.0 + p.z)) * a_norm;
+// }
 
 void main(void){
 	texCoord = a_uv;

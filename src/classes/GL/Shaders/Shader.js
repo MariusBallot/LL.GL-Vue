@@ -1,8 +1,3 @@
-import vertSource from "../../shaders/3D/testShader.vert"
-import fragSource from "../../shaders/3D/testShader.frag"
-
-import { GlUtil } from './gl'
-
 const ATTR_POSITION_NAME = "a_position";
 const ATTR_POSITION_LOC = 0;
 const ATTR_NORMAL_NAME = "a_norm";
@@ -67,7 +62,7 @@ export default class Shader {
 }
 
 
-class ShaderUtil {
+export class ShaderUtil {
     //-------------------------------------------------
     // Main utility functions
     //-------------------------------------------------
@@ -175,90 +170,5 @@ class ShaderUtil {
             cameraMatrix: gl.getUniformLocation(program, "uCameraMatrix"),
             mainTexture: gl.getUniformLocation(program, "uMainTex")
         };
-    }
-}
-
-export class GridAxisShader extends Shader {
-    constructor(gl, pMatrix) {
-        var vertSrc = '#version 300 es\n' +
-            'in vec3 a_position;' +
-            'layout(location=4) in float a_color;' +
-            'uniform mat4 uPMatrix;' +
-            'uniform mat4 uMVMatrix;' +
-            'uniform mat4 uCameraMatrix;' +
-            'uniform vec3 uColor[4];' +
-            'out lowp vec4 color;' +
-            'void main(void){' +
-            'color = vec4(uColor[ int(a_color) ],1.0);' +
-            'gl_Position = uPMatrix * uCameraMatrix * uMVMatrix * vec4(a_position, 1.0);' +
-            '}';
-        var fragSrc = '#version 300 es\n' +
-            'precision mediump float;' +
-            'in vec4 color;' +
-            'out vec4 finalColor;' +
-            'void main(void){ finalColor = color; }';
-
-        super(gl, vertSrc, fragSrc);
-
-        //Standrd Uniforms
-        this.setPerspective(pMatrix);
-
-        //Custom Uniforms 
-        console.log(this.program)
-        var uColor = gl.getUniformLocation(this.program, "uColor");
-        gl.uniform3fv(uColor, new Float32Array([0.8, 0.8, 0.8, 1, 0, 0, 0, 1, 0, 0, 0, 1]));
-
-        //Cleanup
-        gl.useProgram(null);
-    }
-}
-
-export class TestShader extends Shader {
-    constructor(gl, pMatrix) {
-        var vertSrc = vertSource,
-            fragSrc = fragSource
-        super(gl, vertSrc, fragSrc);
-
-        //Custom Uniforms
-        this.uniformLoc.time = gl.getUniformLocation(this.program, "uTime");
-
-        var uColor = gl.getUniformLocation(this.program, "uColor");
-        gl.uniform3fv(
-            uColor,
-            new Float32Array(
-                GlUtil.rgbArray(
-                    "#FF0000",
-                    "00FF00",
-                    "0000FF",
-                    "909090",
-                    "C0C0C0",
-                    "404040"
-                )
-            )
-        );
-
-        //Standrd Uniforms
-        this.setPerspective(pMatrix);
-        this.mainTexture = -1; //Store Our Texture ID
-        gl.useProgram(null); //Done setting up shader
-    }
-
-    setTime(t) {
-        this.gl.uniform1f(this.uniformLoc.time, t);
-        return this;
-    }
-    setTexture(texID) {
-        this.mainTexture = texID;
-        return this;
-    }
-
-    //Override
-    preRender() {
-        //Setup Texture
-        this.gl.activeTexture(this.gl.TEXTURE0);
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.mainTexture);
-        this.gl.uniform1i(this.uniformLoc.mainTexture, 0); //Our predefined uniformLoc.mainTexture is uMainTex, Prev Lessons we made ShaderUtil.getStandardUniformLocations() function in Shaders.js to get its location.
-
-        return this;
     }
 }
